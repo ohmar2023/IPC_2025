@@ -20,6 +20,7 @@ er = 0.1
 # CALCULO -----------------------------------------------------------------
 
 tamanio_matr <- marco_colegios_ipc %>% 
+  #filter(sostenimiento != "Fiscomisional") %>% 
   mutate(dominio = 1,
          var_disenio = costo_medio_matr) %>% 
   group_by(dominio) %>% 
@@ -32,6 +33,10 @@ tamanio_matr <- marco_colegios_ipc %>%
          tam = ceiling(numerador/denominador),
          dif = N - tam) %>% 
   adorn_totals(c("row"))
+
+marco_colegios_ipc %>% group_by(sostenimiento) %>% summarise(n()) %>% 
+  adorn_totals(c("row")) %>% 
+  View()
 
 
 
