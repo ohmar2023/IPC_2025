@@ -109,7 +109,7 @@ writeData(wb, sheet = "tamanio_matr_dom", tamanio_matr_dom)
 writeData(wb, sheet = "tamanio_pen_1", tamanio_pen_1)
 writeData(wb, sheet = "tamanio_pen_dom", tamanio_pen_dom)
 
-saveWorkbook(wb, paste0(dir,"/tamanio_matricula_90_01.xlsx"), overwrite = T)
+saveWorkbook(wb, paste0(dir,"/tamanio_media_90_01.xlsx"), overwrite = T)
 
 
 
