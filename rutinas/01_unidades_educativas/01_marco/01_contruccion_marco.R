@@ -7,11 +7,11 @@ source("rutinas/99_librerias/librerias.R")
 # Lectura base de datos
 # -----------------------------------------------------------------------------
 
-bdd_precios_col <- read_excel("insumos/01_marco/bdd_final_precios_IE_F.XLSX") %>% 
+bdd_precios_col <- read_excel("insumos/01_unidades_educativas/01_marco_ue/bdd_final_precios_IE_F.XLSX") %>% 
   clean_names()
 
 # -----------------------------------------------------------------------------
-# Para qeudarnos con las insitutciones que dispongan infromación en al menos uno
+# Para quedarnos con las instituciones que dispongan información en al menos uno
 # de los niveles que ofertan
 # -----------------------------------------------------------------------------
 
@@ -30,13 +30,27 @@ bdd_precios_col <- bdd_precios_col %>%
                             .data[[aux_2[[3]]]], 
                             .data[[aux_2[[4]]]]), na.rm=TRUE)) %>%
   ungroup() %>% 
-  filter(costo_medio_matr != 0 | costo_medio_pen != "NaN") 
+  filter(costo_medio_matr != 0 | costo_medio_pen != "NaN") %>% 
+  rowwise() %>% 
+  mutate(n_nivel_matr = sum(c(!is.na(.data[[ aux_1[1] ]]) , 
+                              !is.na(.data[[ aux_1[2] ]]) ,
+                              !is.na(.data[[ aux_1[3] ]]) ,
+                              !is.na(.data[[ aux_1[4] ]]) )) ,
+         n_nivel_pen  = sum(c(!is.na(.data[[ aux_2[1] ]]) , 
+                              !is.na(.data[[ aux_2[2] ]]) ,
+                              !is.na(.data[[ aux_2[3] ]]) ,
+                              !is.na(.data[[ aux_2[4] ]]) )),
+         control = ifelse(n_nivel_matr == n_nivel_pen, TRUE, FALSE)) %>% 
+  ungroup() %>% 
+  filter(n_nivel_matr >= 3 & control == TRUE) %>% 
+  ungroup() %>% 
+  filter(sostenimiento == "Particular")
 
 # -----------------------------------------------------------------------------
 # Exportando base de datos
 # -----------------------------------------------------------------------------
 
-ruta <- "productos/01_marco/"
+ruta <- "productos/01_unidades_educativas/01_marco/"
 export(bdd_precios_col, paste0(ruta, "marco_colegios_ipc.rds"))
 
 

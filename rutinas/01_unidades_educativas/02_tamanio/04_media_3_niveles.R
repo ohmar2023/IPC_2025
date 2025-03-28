@@ -1,3 +1,4 @@
+
 rm(list = ls())
 
 source("rutinas/99_librerias/librerias.R")
@@ -8,29 +9,32 @@ source("rutinas/01_unidades_educativas/02_tamanio/99_funciones_colegios.R")
 #-------------------------------------------------------------------------------
 
 ruta <- "productos/01_unidades_educativas/01_marco/marco_colegios_ipc.rds"
-marco_colegios_ipc <- read_rds(ruta)
+#marco_colegios_ipc <- read_rds(ruta)
 
+marco_colegios_ipc_3_niveles <- read_rds(ruta)
+  
 #-------------------------------------------------------------------------------
 # Vamos a buscar las instituciones que dispongan de almenos 3 niveles
 #-------------------------------------------------------------------------------
 
-aux_1 <- marco_colegios_ipc %>% select(contains("matricula")) %>% names()
-aux_2 <- marco_colegios_ipc %>% select(contains("pension")) %>% names()
+# aux_1 <- marco_colegios_ipc %>% select(contains("matricula")) %>% names()
+# aux_2 <- marco_colegios_ipc %>% select(contains("pension")) %>% names()
+# 
+# marco_colegios_ipc_3_niveles <- marco_colegios_ipc %>% 
+#   rowwise() %>% 
+#   mutate(n_nivel_matr = sum(c(!is.na(.data[[ aux_1[1] ]]) , 
+#                               !is.na(.data[[ aux_1[2] ]]) ,
+#                               !is.na(.data[[ aux_1[3] ]]) ,
+#                               !is.na(.data[[ aux_1[4] ]]) )) ,
+#          n_nivel_pen  = sum(c(!is.na(.data[[ aux_2[1] ]]) , 
+#                               !is.na(.data[[ aux_2[2] ]]) ,
+#                               !is.na(.data[[ aux_2[3] ]]) ,
+#                               !is.na(.data[[ aux_2[4] ]]) )),
+#          control = ifelse(n_nivel_matr == n_nivel_pen, TRUE, FALSE)
+#   ) %>% 
+#   ungroup() %>% 
+#   filter(n_nivel_matr >= 3 & control == TRUE)
 
-marco_colegios_ipc_3_niveles <- marco_colegios_ipc %>% 
-  rowwise() %>% 
-  mutate(n_nivel_matr = sum(c(!is.na(.data[[ aux_1[1] ]]) , 
-                              !is.na(.data[[ aux_1[2] ]]) ,
-                              !is.na(.data[[ aux_1[3] ]]) ,
-                              !is.na(.data[[ aux_1[4] ]]) )) ,
-         n_nivel_pen  = sum(c(!is.na(.data[[ aux_2[1] ]]) , 
-                              !is.na(.data[[ aux_2[2] ]]) ,
-                              !is.na(.data[[ aux_2[3] ]]) ,
-                              !is.na(.data[[ aux_2[4] ]]) )),
-         control = ifelse(n_nivel_matr == n_nivel_pen, TRUE, FALSE)
-  ) %>% 
-  ungroup() %>% 
-  filter(n_nivel_matr >= 3 & control == TRUE)
 
 #-------------------------------------------------------------------------------
 # 
