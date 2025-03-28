@@ -55,6 +55,7 @@ tamanio_matr_dom  <- marco_colegios_ipc %>%
          denominador = ((N-1)/N)*((er*sum_var_disenio/z)^2)+N*(desv^2),
          tam = ceiling(numerador/denominador),
          dif = N - tam) %>% 
+  select(dominio,N,tam,dif) %>%
   adorn_totals(c("row"))
 
 # NACIONAL - PENSION ---------------------------------------------------------
@@ -70,6 +71,7 @@ tamanio_pen_1  <- marco_colegios_ipc %>%
          denominador = ((N-1)/N)*((er*sum_var_disenio/z)^2)+N*(desv^2),
          tam = ceiling(numerador/denominador),
          dif = N - tam) %>% 
+  select(dominio,N,tam,dif) %>%
   adorn_totals(c("row"))
 
 # DOMINIO - PENSION ---------------------------------------------------------
@@ -85,6 +87,7 @@ tamanio_pen_dom  <- marco_colegios_ipc %>%
          denominador = ((N-1)/N)*((er*sum_var_disenio/z)^2)+N*(desv^2),
          tam = ceiling(numerador/denominador),
          dif = N - tam) %>% 
+  select(dominio,N,tam,dif) %>%
   adorn_totals(c("row"))
 
 #-------------------------------------------------------------------------------

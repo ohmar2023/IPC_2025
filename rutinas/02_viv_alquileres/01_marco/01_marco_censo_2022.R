@@ -5,7 +5,7 @@ source("rutinas/99_librerias/librerias.R")
 source("rutinas/99_librerias/unzip.R")
 
 # -----------------------------------------------------------------------------
-# LECTURA BASE CENSO VIVIENDAS -------------------------------------------------
+# LECTURA BASE CENSO VIVIENDAS ------------------------------------------------
 # -----------------------------------------------------------------------------
 
 viv_2022 <- read_zip("INSUMOS/03_censo", "bases.zip", "viv_2022.csv") %>% 
@@ -22,16 +22,18 @@ viv_2022 <- read_zip("INSUMOS/03_censo", "bases.zip", "viv_2022.csv") %>%
     
     I08 = str_pad(I08,width = 3,side = "left", pad = "0"),#numero de edificio
     I10 = str_pad(I10,width = 3,side = "left", pad = "0") #numero de vivienda
-  )
+  ) 
   
 viv_2022 <- viv_2022 %>% 
   mutate(
-    man_loc = ifelse(I04=="999",I07,I06),
+    man_loc = ifelse(I04 == "999",I07,I06),
     id_dom = paste0(I01,I02,I03),
     id_viv = paste0(id_dom,I04,I05,
                     man_loc,I08,I10))
 
-# LECTURA BASE CENSO HOGARES ---------------------------------------------------
+# -----------------------------------------------------------------------------
+# LECTURA BASE CENSO HOGARES --------------------------------------------------
+# -----------------------------------------------------------------------------
 
 hog_2022 <- read_zip("INSUMOS/03_censo", "bases.zip", "hog_2022.csv") %>%   
   mutate(
@@ -51,20 +53,14 @@ hog_2022 <- read_zip("INSUMOS/03_censo", "bases.zip", "hog_2022.csv") %>%
 
 hog_2022 <- hog_2022 %>% 
   mutate(
-    man_loc = ifelse(I04=="999",I07,I06),
+    man_loc = ifelse(I04 == "999",I07,I06),
     id_dom = paste0(I01,I02,I03),
     id_viv = paste0(id_dom,I04,I05,
                     man_loc,I08,I10)) %>% 
-  filter(H09 == 4) %>% 
+  filter(H09 == 4) %>% # 4. Arrendada/anticresis
   group_by(id_viv) %>% 
-  mutate(cuartos_cocinar = ifelse(1 %in% unique(H02),TRUE,FALSE)) %>%
+  #mutate(cuartos_cocinar = ifelse(1 %in% unique(H02),TRUE,FALSE)) %>%
   ungroup()
-
-#hog_2022 %>% group_by(id_viv) %>% summarise(n()) %>% View()
-
-# hog_2022 %>% group_by(id_viv) %>% 
-#   mutate(nueva = sum(H01)) %>%
-#   ungroup() %>% View()
 
 hog_2022 <- hog_2022[!duplicated(hog_2022$id_viv),]
 dim(hog_2022)
@@ -76,48 +72,53 @@ n_distinct(hog_2022$id_viv)
 
 viv_hog <- viv_2022 %>% filter(id_viv %in% hog_2022$id_viv)
 viv_hog <- viv_hog %>% 
-  left_join(select(hog_2022,cuartos_cocinar,id_viv),by = "id_viv")
+  left_join(select(hog_2022, H09, id_viv),by = "id_viv")
 
 dim(viv_hog)
 n_distinct(viv_hog$id_viv)
 
-### CIUDADES A COSNIDERAR ###
+
+
+#-------------------------------------------------------------------------------
+# Filtrando base acorde a las necesidades del pedido:
+
+  #Nos quedamos con v01 (Tipo de vivienda) = 1. Casa/villa y 2. Departamento en casa o edificio
+  #Nos quedamos con AUR	(Área urbana o rural) = 1
+  #Consideramos solo los dominios especificados en v_ciudades_auto
+  #Para el caso de Galápagos (I01 == "20") se cosnsidera su dom a nivel de provincia
+  #Se crea id_dom_2 para hacer el calculo de tamaño cosniderando casa y depart.
+  #No es correcto usar id_dom_2 para el caso de Galápagos. Considerar solo a nivel de prov. 
+#-------------------------------------------------------------------------------
+
 v_ciudades_auto <- c("170150","090150","010150","070150","180150",
                      "080150", "230150", "130850", "110150")
 
 t_1 <- viv_hog %>% 
-  filter(V01 %in% c(1,2,3)) %>% 
-  filter(id_dom %in% v_ciudades_auto) 
+  filter((V01 %in% c(1,2) & AUR == 1)) %>% 
+  filter(id_dom %in% v_ciudades_auto | I01 == "20") %>% 
+  mutate(id_dom_2 = paste0(id_dom,"_",V01 )) %>% 
+  mutate(id_dom = ifelse(I01 == "20", "20", id_dom),
+         id_dom_2 = ifelse(I01 == "20", "20", id_dom_2))
 
-t_1 <- t_1 %>% select(id_dom,id_viv,
+t_1 <- t_1 %>% select(id_dom,
+                      id_dom_2,
+                      id_viv,
                       I01,I02,
                       I03,I04,
                       I05,I06,
                       I08,I10,man_loc,
                       V01,
-                      V15,
-                      cuartos_cocinar)
+                      V15)
 
-export(t_1,"lista_viv_arriendo.xlsx")
+#-------------------------------------------------------------------------------
+# Exportando -------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
-tabla <- t_1 %>% group_by(id_dom,V01) %>% summarise(n = n())
+ruta <- "productos/02_viv_alquileres/01_marco/"
 
-pivot_wider(tabla,
-            names_from = "V01",
-            values_from = n) %>% 
-  adorn_totals() %>% 
-  View()
+export(t_1, paste0(ruta, "/marco_ipc_alquileres_2025.rds"))
 
 
-hog_2022 %>% filter(id_viv %in% t_1$id_viv) %>% 
-  group_by(id_viv) %>% 
-  summarise(n = n()) %>% 
-  filter(n != 1 ) %>% 
-  View()
-
-
-names(t_1)
-dim(t_1)
 
 
 
