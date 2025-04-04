@@ -10,6 +10,11 @@ source("rutinas/99_librerias/librerias.R")
 ruta <- "productos/02_viv_alquileres/01_marco/marco_ipc_alquileres_2025.rds"
 marco_ipc_alquileres_2025 <- import(ruta)
 
+# 
+# export(marco_ipc_alquileres_2025 %>% 
+#   group_by(id_dom, nombre_dom) %>% 
+#   summarise(n()) %>% adorn_totals(), "resumen_marco.xlsx")
+
 # -----------------------------------------------------------------------------
 # Lectura base ENEMDU
 
@@ -72,37 +77,61 @@ hog_censo <- marco_ipc_alquileres_2025 %>%
 
 est <- est_media %>% 
   left_join(est_sd, by = "dominio") %>% 
-  left_join(hog_censo, by = "dominio")
+  left_join(hog_censo, by = "dominio") 
+  
+# -----------------------------------------------------------------------------
+# Agregando los nombres de los dominios a las estimaciones
+# -----------------------------------------------------------------------------
+
+est <- est %>% 
+  mutate(nombre_dom = 
+           case_when(substr(dominio, 1, 6) == "170150" ~ "Quito",
+                     substr(dominio, 1, 6) == "090150" ~ "Guayaquil",
+                     substr(dominio, 1, 6) == "010150" ~ "Cuenca",
+                     substr(dominio, 1, 6) == "070150" ~ "Machala",
+                     substr(dominio, 1, 6) == "180150" ~ "Ambato",
+                     substr(dominio, 1, 6) == "080150" ~ "Esmeraldas",
+                     substr(dominio, 1, 6) == "230150" ~ "Sto. Domingo", 
+                     substr(dominio, 1, 6) == "130850" ~ "Manta", 
+                     substr(dominio, 1, 6) == "110150" ~ "Loja",
+                     dominio == "20" ~ "Galápagos",
+                     TRUE ~ "Error"))  
 
 #-------------------------------------------------------------------------------
 # PARAMETROS
 #-------------------------------------------------------------------------------
 
-nc = 0.95
-z = qnorm(nc+(1-nc)/2)
-er = 0.065
+nc = 0.9
+z = qnorm(nc + (1-nc)/2)
+er = 0.1
 
 # CALCULO -----------------------------------------------------------------
 
 tamanio <- est %>% 
   mutate(dominio = dominio) %>% 
-  group_by(dominio) %>% 
+  filter(dominio == "20") %>% 
+  group_by(dominio, nombre_dom) %>% 
   summarise(N = N_alq_censo,
             n = unique(n),
             desv = sd_alq,
             y = med_alq) %>% 
   mutate(numerador = (desv)^2,
          denominador = ((er*y/z)^2) + (desv^2/N),
-         tam = ceiling(numerador/denominador)) %>% 
-  select(dominio, tam) %>% 
+         tam = ceiling(numerador/denominador), 
+         tam = mult_6(tam, N)) %>% 
+  select(dominio, nombre_dom, tam) %>% 
   adorn_totals(c("row"))
 
 
 # Analizar el escenario dominio considerando depar y casa (1 y 2 variable censo viv - V01)
 # Pendiente galapagos, me deben enviar los niveles de desagregación
 
-export(tamanio,"alquileres_1_2_95_065.xlsx")
-export(est,"est_1_2_dom_2.xlsx")
+
+ruta <- "productos/02_viv_alquileres/04_reunion_3_cepal/"
+
+export(tamanio,paste0(ruta, "alquileres_",dominio,"_",nc,"_",er,".xlsx"))
+export(est %>% select(dominio, nombre_dom, med_alq, n, N_alq_censo),
+       paste0(ruta,"est_", dominio, ".xlsx"))
 
 
 

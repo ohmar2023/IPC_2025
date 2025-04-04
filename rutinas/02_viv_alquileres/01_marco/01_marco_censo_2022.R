@@ -77,8 +77,6 @@ viv_hog <- viv_hog %>%
 dim(viv_hog)
 n_distinct(viv_hog$id_viv)
 
-
-
 #-------------------------------------------------------------------------------
 # Filtrando base acorde a las necesidades del pedido:
 
@@ -87,7 +85,7 @@ n_distinct(viv_hog$id_viv)
   #Consideramos solo los dominios especificados en v_ciudades_auto
   #Para el caso de Galápagos (I01 == "20") se cosnsidera su dom a nivel de provincia
   #Se crea id_dom_2 para hacer el calculo de tamaño cosniderando casa y depart.
-  #No es correcto usar id_dom_2 para el caso de Galápagos. Considerar solo a nivel de prov. 
+  #No es correcto usar id_dom para el caso de Galápagos. Considerar solo a nivel de prov. 
 #-------------------------------------------------------------------------------
 
 v_ciudades_auto <- c("170150","090150","010150","070150","180150",
@@ -109,6 +107,22 @@ t_1 <- t_1 %>% select(id_dom,
                       I08,I10,man_loc,
                       V01,
                       V15)
+
+# -----------------------------------------------------------------------------
+# Agregando los nombres de los dominios al marco
+# -----------------------------------------------------------------------------
+
+t_1 <- t_1 %>% mutate(nombre_dom = case_when(id_dom == "170150" ~ "Quito",
+                                             id_dom == "090150" ~ "Guayaquil",
+                                             id_dom == "010150" ~ "Cuenca",
+                                             id_dom == "070150" ~ "Machala",
+                                             id_dom == "180150" ~ "Ambato",
+                                             id_dom == "080150" ~ "Esmeraldas",
+                                             id_dom == "230150" ~ "Sto. Domingo", 
+                                             id_dom == "130850" ~ "Manta", 
+                                             id_dom == "110150" ~ "Loja",
+                                             id_dom == "20" ~ "Galápagos",
+                                             TRUE ~ "Error"))
 
 #-------------------------------------------------------------------------------
 # Exportando -------------------------------------------------------------------

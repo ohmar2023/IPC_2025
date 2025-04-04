@@ -55,9 +55,8 @@ tamanio_matr_dom <- tamanio_media(base = marco_colegios_ipc_3_niveles,
                                 dominio = "canton",
                                 variable = "costo_medio_matr")
 
-
 niveles_3_0.90_0.01 <- tamanio_matr_dom %>% 
-  mutate(p = N/sum(N), 
+  mutate(p = N/sum(N),
          tam_nacional = ceiling(p * tamanio_matr_1$tam),
          dif_2 = N - tam_nacional) %>% 
   adorn_totals(c("row")) 
@@ -66,18 +65,9 @@ niveles_3_0.90_0.01 <- tamanio_matr_dom %>%
 # Exportar
 #-------------------------------------------------------------------------------
 
-export(niveles_3_0.90_0.01, "niveles_3_0.90_0.01.xlsx")
-
-
-
-
-
-
-
-
-
-
-
+ruta <- "productos/01_unidades_educativas/02_tamanio_media/003 escenarios_sin_fisco/"
+export(niveles_3_0.90_0.01, 
+       paste0(ruta,"niveles_3_0.90_0.01.xlsx"))
 
 
 # tamanio_matr_1 <- marco_colegios_ipc_3_niveles %>% 
