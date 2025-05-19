@@ -27,7 +27,7 @@ tamanio_matr_dom <- tamanio_media(base = marco_colegios_ipc_sin_gye_uio,
                                 er = 0.1,
                                 dominio = "canton",
                                 variable = "costo_medio_matr")
-
+  
 sin_gye_uio_0.90_0.01 <- tamanio_matr_dom %>% 
   mutate(p = N/sum(N), 
          tam_nacional = ceiling(p * tamanio_matr_1$tam),
