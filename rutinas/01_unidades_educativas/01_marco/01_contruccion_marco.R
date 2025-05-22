@@ -1,13 +1,16 @@
 
 rm(list = ls())
 
-source("rutinas/99_librerias/librerias.R")
+source("rutinas/99_librerias_funciones/librerias.R")
 
 # -----------------------------------------------------------------------------
 # Lectura base de datos
 # -----------------------------------------------------------------------------
 
-bdd_precios_col <- read_excel("insumos/01_unidades_educativas/01_marco_ue/bdd_final_precios_IE_F.XLSX") %>% 
+# bdd_precios_col <- read_excel("insumos/01_unidades_educativas/01_marco_ue/bdd_final_precios_IE_F.XLSX") %>% 
+#   clean_names()
+
+bdd_precios_col <- read_excel("insumos/01_unidades_educativas/01_marco_ue/marco_muestral.xlsx") %>% 
   clean_names()
 
 # -----------------------------------------------------------------------------

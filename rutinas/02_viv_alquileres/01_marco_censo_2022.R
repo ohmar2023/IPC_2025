@@ -1,8 +1,8 @@
 
 rm(list = ls())
 
-source("rutinas/99_librerias/librerias.R")
-source("rutinas/99_librerias/unzip.R")
+source("rutinas/99_librerias_funciones/librerias.R")
+source("rutinas/99_librerias_funciones/unzip.R")
 
 # -----------------------------------------------------------------------------
 # LECTURA BASE CENSO VIVIENDAS ------------------------------------------------
@@ -33,6 +33,7 @@ viv_2022 <- viv_2022 %>%
 
 # -----------------------------------------------------------------------------
 # LECTURA BASE CENSO HOGARES --------------------------------------------------
+# Se filtra la tenencia H09 : 4. Arrendada/anticresis
 # -----------------------------------------------------------------------------
 
 hog_2022 <- read_zip("INSUMOS/03_censo", "bases.zip", "hog_2022.csv") %>%   
@@ -57,7 +58,7 @@ hog_2022 <- hog_2022 %>%
     id_dom = paste0(I01,I02,I03),
     id_viv = paste0(id_dom,I04,I05,
                     man_loc,I08,I10)) %>% 
-  filter(H09 == 4) %>% # 4. Arrendada/anticresis
+  filter(H09 == 4) %>% # Tenencia de la vivienda = 4. Arrendada/anticresis
   group_by(id_viv) %>% 
   #mutate(cuartos_cocinar = ifelse(1 %in% unique(H02),TRUE,FALSE)) %>%
   ungroup()
@@ -68,20 +69,19 @@ n_distinct(hog_2022$id_viv)
 
 #-------------------------------------------------------------------------------
 # JUNTANDO LA BASE DE HOGARES Y VIVIENDAS --------------------------------------
+# Condición de ocupación de la vivienda: V0201 == 1 Ocupada con personas presentes. 
 #-------------------------------------------------------------------------------
 
 viv_hog <- viv_2022 %>% filter(id_viv %in% hog_2022$id_viv)
 viv_hog <- viv_hog %>% 
-  left_join(select(hog_2022, H09, id_viv),by = "id_viv")
-
-dim(viv_hog)
-n_distinct(viv_hog$id_viv)
+  left_join(select(hog_2022, H09, id_viv), by = "id_viv") %>% 
+  filter(V0201 == 1) #1. Ocupada con personas presentes
 
 #-------------------------------------------------------------------------------
 # Filtrando base acorde a las necesidades del pedido:
 
   #Nos quedamos con v01 (Tipo de vivienda) = 1. Casa/villa y 2. Departamento en casa o edificio
-  #Nos quedamos con AUR	(Área urbana o rural) = 1
+  #Nos quedamos con AUR	(Área urbana o rural) = 1-Área Urbana
   #Consideramos solo los dominios especificados en v_ciudades_auto
   #Para el caso de Galápagos (I01 == "20") se cosnsidera su dom a nivel de provincia
   #Se crea id_dom_2 para hacer el calculo de tamaño cosniderando casa y depart.
@@ -101,12 +101,16 @@ t_1 <- viv_hog %>%
 t_1 <- t_1 %>% select(id_dom,
                       id_dom_2,
                       id_viv,
-                      I01,I02,
-                      I03,I04,
-                      I05,I06,
-                      I08,I10,man_loc,
-                      V01,
-                      V15)
+                      I01,I02,I03,I04,I05,I06,I08,I10,man_loc,
+                      
+                      D01, #Tipo de vía
+                      V01, #Tipo de vivienda
+                      V16, #Todas las personas comparten un mismo gasto para la alimentación
+                      V17, #Número de hogares
+                      TOTPER, #TOTPER
+                      V0201, #Condición de ocupación de vivienda particular
+                      V15) %>% #Número de cuartos
+  rename(dominio = id_dom_2)
 
 # -----------------------------------------------------------------------------
 # Agregando los nombres de los dominios al marco
