@@ -45,9 +45,20 @@ bdd_precios_col <- bdd_precios_col %>%
                               !is.na(.data[[ aux_2[4] ]]) )),
          control = ifelse(n_nivel_matr == n_nivel_pen, TRUE, FALSE)) %>% 
   ungroup() %>% 
-  filter(n_nivel_matr >= 3 & control == TRUE) %>% 
   ungroup() %>% 
-  filter(sostenimiento == "Particular")
+  # Se deben incluir las U.E que tengan al menos 3 de los 4 niveles educativos
+  filter(n_nivel_matr >= 3 & control == TRUE) %>%
+  # solo sean particulares 
+  filter(sostenimiento == "Particular") %>% 
+  # Que pertenezcan a la modalidad presencial (en la variable modalidad 
+  #seleccionar las observaciones de “Presencial”, “Presencial y A Distancia”, 
+  #“Presencial y Educación Abierta (en línea y virtual)”, “Presencial y 
+  #Educación en casa”, “Presencial y Semipresencial” y “Presencial, Semipresencial 
+  #y A Distancia”). 
+  filter(grepl(modalidad, pattern = "Presencial")) %>% 
+  #Sin Quito y sin Guayaquil
+  filter(!canton %in% c("QUITO", "GUAYAQUIL")) 
+
 
 # -----------------------------------------------------------------------------
 # Exportando base de datos

@@ -8,13 +8,11 @@ source("rutinas/01_unidades_educativas/02_tamanio/99_funciones_colegios.R")
 # Lectuta marco
 #-------------------------------------------------------------------------------
 
-inc_for <- read_excel("insumos/01_unidades_educativas/01_marco_ue/UE_inclusion_forsoza.xlsx", 
-                      sheet = "Nuevo IPC") %>% clean_names()
+inc_for <- read_excel("insumos/01_unidades_educativas/01_marco_ue/inclusion_forzosa.xlsx") %>% clean_names()
 
 ruta <- "productos/01_unidades_educativas/01_marco/marco_colegios_ipc.rds"
 marco_colegios_ipc_sin_gye_uio <- read_rds(ruta) %>% 
-  filter(!canton %in% c("QUITO", "GUAYAQUIL")) %>% 
-  filter(!(institucion %in% inc_for$institucion))
+  filter(!(amie %in% inc_for$amie))
   
 #-------------------------------------------------------------------------------
 # 
@@ -35,6 +33,7 @@ tamanio_matr_dom <- tamanio_media(base = marco_colegios_ipc_sin_gye_uio,
 sin_gye_uio_0.90_0.01 <- tamanio_matr_dom %>% 
   mutate(p = N/sum(N), 
          tam_nacional = ceiling(p * tamanio_matr_1$tam),
+         tam_nacional = ifelse(tam_nacional < 5, tam_nacional + 1 , tam_nacional),
          dif_2 = N - tam_nacional) %>% 
   adorn_totals(c("row")) 
 
@@ -42,10 +41,7 @@ sin_gye_uio_0.90_0.01 <- tamanio_matr_dom %>%
 # Exportar
 #-------------------------------------------------------------------------------
 
-export(sin_gye_uio_0.90_0.01, "sin_gye_uio_0.90_0.01.xlsx")
-
-
-
+export(sin_gye_uio_0.90_0.01, "productos/01_unidades_educativas/02_tamanio_media/tamanio_UE_final.xlsx")
 
 
 # dir <- paste0("productos/01_unidades_educativas/02_tamanio_media")

@@ -34,7 +34,7 @@ tamanio_media <- function(base,
       mutate(numerador = (desv)^2,
              denominador = ((er*y/z)^2) + (desv^2/N),
              tam = ceiling(numerador/denominador),
-             #tam = mult_6(tam,N),
+             #tam = ifelse(tam < 5, tam + 1 , tam),
               dif = N - tam) %>% 
        select(dominio,N,tam,dif) 
   }else{
@@ -49,28 +49,10 @@ tamanio_media <- function(base,
       mutate(numerador = (desv)^2,
              denominador = ((er*y/z)^2) + (desv^2/N),
              tam = ceiling(numerador/denominador),
-             #tam = mult_6(tam,N),
+             #tam = ifelse(tam < 5, tam + 1 , tam),
              dif = N - tam) %>% 
       select(dominio,N,tam,dif) 
   }
 }
 
-
-
-# 
-# tamanio_matr_1 <- marco_colegios_ipc_3_niveles %>%
-#   #filter(sostenimiento != "Fiscomisional") %>%
-#   mutate(dominio = 1,
-#          var_disenio = costo_medio_matr) %>%
-#   group_by(dominio) %>%
-#   summarise(N = n(),
-#             desv = sd(var_disenio,na.rm = T),
-#             sum_var_disenio = sum(var_disenio,na.rm = T),
-#             y = mean(var_disenio)) %>%
-#   mutate(numerador = (desv)^2,
-#          denominador = ((er*y/z)^2) + (desv^2/N),
-#          tam = ceiling(numerador/denominador),
-#          dif = N - tam) %>%
-#   select(dominio,N,tam,dif) %>%
-#   adorn_totals(c("row"))
 
