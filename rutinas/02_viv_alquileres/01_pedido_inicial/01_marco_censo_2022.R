@@ -137,11 +137,3 @@ ruta <- "productos/02_viv_alquileres/01_marco/"
 export(t_1, paste0(ruta, "/marco_ipc_alquileres_2025.rds"))
 
 
-
-
-
-
-
-
-
-

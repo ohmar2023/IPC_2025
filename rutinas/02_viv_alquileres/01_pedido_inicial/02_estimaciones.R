@@ -10,7 +10,6 @@ source("rutinas/99_librerias_funciones/librerias.R")
 ruta <- "productos/02_viv_alquileres/01_marco/marco_ipc_alquileres_2025.rds"
 marco_ipc_alquileres_2025 <- import(ruta)
 
-# 
 # export(marco_ipc_alquileres_2025 %>% 
 #   group_by(id_dom, nombre_dom) %>% 
 #   summarise(n()) %>% adorn_totals(), "resumen_marco.xlsx")
@@ -96,7 +95,6 @@ est <- est %>%
                      substr(dominio, 1, 6) == "110150" ~ "Loja",
                      dominio == "20" ~ "Galápagos",
                      TRUE ~ "Error"))  
-
 
 #-------------------------------------------------------------------------------
 # Exportando -------------------------------------------------------------------
