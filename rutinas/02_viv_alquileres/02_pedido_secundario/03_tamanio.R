@@ -92,13 +92,19 @@ if(tamanio %>% group_by(id_dom) %>%
 }
 
 #-------------------------------------------------------------------------------
+# Tamanio final por dominio
+#-------------------------------------------------------------------------------
+
+tamanio_variables <- tamanio %>% mutate(dominio = paste0(id_dom, "_", V01))
+tamanio_enviar <- tamanio_variables %>% select(dominio, nombre_dom, tam_distr)
+
+#-------------------------------------------------------------------------------
 # Exportando
 #-------------------------------------------------------------------------------
 
 ruta <- "productos/02_viv_alquileres/02_pedido_secundario/03_tamanio/"
-export(tamanio %>% select(id_dom, nombre_dom, V01, tam_distr), 
-       paste0(ruta, "tam_ped_002_final.rds"))
-
+export(tamanio_enviar, paste0(ruta, "tam_ped_002_final.rds"))
+export(tamanio_variables, paste0(ruta, "tam_ped_002_final_mas_variables.rds"))
 
 
 
