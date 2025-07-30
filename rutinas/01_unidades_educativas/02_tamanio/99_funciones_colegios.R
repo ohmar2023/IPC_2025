@@ -56,3 +56,4 @@ tamanio_media <- function(base,
 }
 
 
+
