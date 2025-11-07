@@ -8,7 +8,8 @@ source("rutinas/01_unidades_educativas/02_tamanio/99_funciones_colegios.R")
 # Lectuta marco
 #-------------------------------------------------------------------------------
 
-inc_for <- read_excel("insumos/01_unidades_educativas/01_marco_ue/inclusion_forzosa.xlsx") %>% clean_names()
+inc_for <- read_excel("insumos/01_unidades_educativas/01_marco_ue/inclusion_forzosa.xlsx") %>% 
+  clean_names()
 
 ruta <- "productos/01_unidades_educativas/01_marco/marco_colegios_ipc.rds"
 marco_colegios_ipc_sin_gye_uio <- read_rds(ruta) %>% 
