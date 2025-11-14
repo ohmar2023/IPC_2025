@@ -20,12 +20,23 @@ tabla_1 <- marco_ipc_alquileres_2025 %>%
 ruta <- "productos/02_viv_alquileres/02_pedido_secundario/03_tamanio/tam_ped_002_final.rds"
 tamanio <- import(ruta)
 
+tamanio_galapagos <- readRDS("productos/02_viv_alquileres/02_pedido_secundario/03_tamanio/tamanio_galapagos.rds") 
+tamanio_galapagos <- tamanio_galapagos %>% 
+  mutate(nombre_dom = "Galapagos") %>% 
+  select(dominio, nombre_dom, tam_distr = tam_ppt) %>% 
+  adorn_totals()
+  
+
 tabla_2 <- tamanio %>% 
   mutate(tipo = ifelse(substr(dominio, 8, 8) == 1 , "Casa", "Departamento")) %>% 
   select(-dominio) %>% 
   pivot_wider(names_from = tipo, 
               values_from = tam_distr) %>% 
   adorn_totals(c("row","col")) 
+
+
+
+tamanio_galapagos %>% adorn_totals() %>% View()
 
 # -----------------------------------------------------------------------------
 # Exportando
@@ -48,5 +59,18 @@ if(sum(dir(dir) == paste0(fecha, ".xlsx"))==1){
 }else{
   message("El código falló")
 }
+
+288+
+312+
+222+
+396+
+210+
+414+
+498+
+294+
+318+
+72
+3024-72
+
 
 

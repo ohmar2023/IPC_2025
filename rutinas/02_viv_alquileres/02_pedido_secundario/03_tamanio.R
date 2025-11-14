@@ -72,7 +72,7 @@ tamanio <- rbind(tamanio_1, tamanio_2)
 
 tamanio <- marco_ipc_alquileres_2025 %>% 
   group_by(id_dom, V01) %>% 
-  summarise(n_casas_dep = n()) %>%
+  summarise(n_casas_dep = n()) %>% 
   group_by(id_dom) %>% 
   mutate(prop = n_casas_dep / sum(n_casas_dep) ) %>%
   ungroup() %>% 
@@ -105,6 +105,9 @@ tamanio_enviar <- tamanio_variables %>% select(dominio, nombre_dom, tam_distr)
 ruta <- "productos/02_viv_alquileres/02_pedido_secundario/03_tamanio/"
 export(tamanio_enviar, paste0(ruta, "tam_ped_002_final.rds"))
 export(tamanio_variables, paste0(ruta, "tam_ped_002_final_mas_variables.rds"))
+
+
+
 
 
 
